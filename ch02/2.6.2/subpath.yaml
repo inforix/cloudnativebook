@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: my-drupal
+spec:
+  containers:
+  - name: mysql
+    image: mysql
+    env:
+    - name: MYSQL_ROOT_PASSWORD
+      value: "rootpassword"
+    volumeMounts:
+    - mountPath: /var/lib/mysql
+      name: site-data
+      subPath: mysql
+  - name: drupal
+    image: drupal:7.66
+    volumeMounts:
+    - mountPath: /var/www/html
+      name: site-data
+      subPath: html
+  volumes:
+  - name: site-data
+    persistentVolumeClaim:
+      claimName: my-drupal-data
