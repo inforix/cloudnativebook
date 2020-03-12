@@ -1,0 +1,48 @@
+image: docker:latest
+services:
+  - name: docker:dind
+    command: ["--registry-mirror=https://repo.shmtu.edu.cn"]
+stages:
+  - build
+  - deploy
+
+variables:
+  IMAGE_VERSION: "2020030201"
+  CONTAINER_IMAGE: cas:${IMAGE_VERSION}
+  DOCKER_TLS_CERTDIR: ""
+  DOCKER_HOST: tcp://localhost:2375/
+  DOCKER_DRIVER: overlay2
+  REGISTRY_IMAGE: ${REGISTRY_SERVER}/cas:${IMAGE_VERSION}
+  
+
+build:
+  stage: build
+  script: 
+    - docker build -t ${CONTAINER_IMAGE} .
+    - docker login -u ${REGISTRY_USER} -p ${REGISTRY_PASSWORD} ${REGISTRY_SERVER}
+    - docker tag ${CONTAINER_IMAGE} ${REGISTRY_IMAGE}
+    - docker push ${REGISTRY_IMAGE}
+  only:
+    changes:
+      - Dockerfile
+      - src/**/*
+      - build.gradle
+      - .gitlab-ci.yml
+
+deploy:
+  variables:
+    GIT_STRATEGY: none
+  stage: deploy
+  image: dtzar/helm-kubectl:2.14.1
+  when: manual
+  script:
+    - kubectl version
+    - kubectl config set-cluster k8s --server="${K8S_SERVER}"
+    - kubectl config set clusters.k8s.certificate-authority-data "${K8S_CA_PEM}"
+    - kubectl config set-credentials gitlab --token="${K8S_USER_TOKEN}"
+    - kubectl config set-context default --cluster=k8s --user=gitlab
+    - kubectl config use-context default
+    - kubectl -n cas create configmap cas --from-file=etc/cas/config/cas.properties --from-file=etc/cas/config/log4j2.xml --output=yaml --dry-run | kubectl apply -f -
+    - sed -i "s/<VERSION>/${IMAGE_VERSION}/g" deployment.yaml
+    - cat deployment.yaml
+    - kubectl apply -f deployment.yaml

@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: fluentd-syslog
+  namespace: kube-log
+  labels:
+    app: fluentd-syslog
+spec:
+  selector:
+    app: fluentd-syslog
+  ports:
+  - port: 5140
+    name: transport
+    nodePort: 30514
+    protocol: UDP
+  type: NodePort

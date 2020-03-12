@@ -1,0 +1,16 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: cas-gateway
+spec:
+  servers:
+  - port:
+      number: 443
+      name: https
+      protocol: HTTPS
+    hosts:
+    - cas.shmtu.edu.cn
+    tls:
+      mode: SIMPLE
+      serverCertificate: /opt/certs/shmtu.crt
+      privateKey: /opt/certs/shmtu.key

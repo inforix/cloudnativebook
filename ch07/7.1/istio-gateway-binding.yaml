@@ -1,0 +1,15 @@
+# 请注意，本文件并不完整
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: cas
+spec:
+  hosts:
+    - cas.shmtu.edu.cn
+  gateways:
+  - cas-gateway # <---- 绑定到 Gateway
+  http:
+  - match:
+    - uri:
+        prefix: /
+    route:

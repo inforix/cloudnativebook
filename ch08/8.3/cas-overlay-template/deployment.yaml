@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cas
+  namespace: cas
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: cas
+  template:
+    metadata:
+      labels:
+        app: cas
+    spec:
+      affinity:
+        # Try to put each ES master node on a different node in the K8s cluster
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                  - key: service
+                    operator: In
+                    values:
+                      - cas
+                topologyKey: kubernetes.io/hostname
+      containers:
+        - name: cas
+          image: repo.shmtu.edu.cn:8443/cas:<VERSION>
+          ports:
+            - name: cas-port
+              containerPort: 8443
+          resources:
+            requests:
+              memory: "1Gi"
+              cpu: "0.1"
+            limits:
+              memory: "4Gi"
+              cpu: "1"
+          livenessProbe:
+            httpGet:
+              path: /cas/actuator/health
+              port: cas-port
+            initialDelaySeconds: 90
+            periodSeconds: 10
+            timeoutSeconds: 3
+          readinessProbe:
+            httpGet:
+              path: /cas/actuator/health
+              port: cas-port
+            initialDelaySeconds: 90
+            periodSeconds: 5
+            timeoutSeconds: 3
+          volumeMounts:
+            - name: cas-properties
+              mountPath: /etc/cas/config
+      volumes:
+        - name: cas-properties
+          configMap:
+            name: cas
+            items:
+              - key: cas.properties
+                path: cas.properties
+              - key: log4j2.xml
+                path: log4j2.xml

@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fluentd-syslog
+  namespace: kube-log
+  labels:
+    app: fluentd-syslog
+spec:
+  selector:
+    matchLabels:
+      app: fluentd-syslog
+  template:
+    metadata:
+      labels:
+        app: fluentd-syslog
+    spec:
+      containers:
+      - name: fluentd-syslog
+        image: gcr.io/fluentd-elasticsearch/fluentd:v2.5.2
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 5140
+          protocol: UDP
+        volumeMounts:
+          - name: config
+            mountPath: /etc/fluent/
+          - name: tz-config
+            mountPath: /etc/localtime
+      volumes:
+      - name: config
+        configMap:
+          name: fluent-syslog-conf
+      - name: tz-config
+        hostPath:
+          path: /usr/share/zoneinfo/Asia/Shanghai

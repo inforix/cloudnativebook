@@ -1,0 +1,8 @@
+piVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: kube-log
+  name: es-config
+data:
+  java.security: |
+    networkaddress.cache.ttl=60

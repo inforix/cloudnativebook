@@ -1,0 +1,60 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: testapps-svc
+  namespace: gitlab-managed-apps
+  labels:
+    app: testapp-svc
+spec:
+  type: NodePort
+  ports:
+  - port: 3000
+    nodePort: 30300
+  selector:
+    app: testapp
+    tier: frontend
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: testapp
+  labels:
+    app: testapp
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: testapp
+      tier: frontend
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  template:
+    metadata:
+      labels:
+        app: testapp
+        tier: frontend
+    spec:
+      containers:
+        - name: testapp
+          image: repo.shmtu.edu.cn/testapp:<VERSION>
+          ports:
+            - containerPort: 3000
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 3000
+            initialDelaySeconds: 2
+            periodSeconds: 2
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 3000
+            initialDelaySeconds: 2
+            periodSeconds: 2
+      imagePullSecrets:
+        - name: local-registry    

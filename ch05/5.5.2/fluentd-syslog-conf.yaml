@@ -1,0 +1,40 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: fluent-syslog-conf
+  namespace: kube-log
+  labels:
+    name: fluent-syslog-conf
+data:
+  fluent.conf: |-
+    <source>
+      @type syslog
+      port 5140
+      bind 0.0.0.0
+      protocol_type udp
+      <parse>
+        message_format auto
+      </parse>
+      tag haproxy
+    </source>
+    <match haproxy.**>
+      @type copy
+      <store>
+        @type elasticsearch
+        host elasticsearch
+        port 9200
+        logstash_format true
+        index_name haproxy
+        type_name haproxy
+        <buffer>
+          flush_mode interval
+          flush_thread_count 4
+          flush_interval 5s
+          chunk_limit_size 2M
+          queue_limit_length 8
+        </buffer>
+      </store>
+      <store>
+        @type stdout
+      </store>
+    </match>

@@ -1,0 +1,51 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: drupal-mysql-service
+spec:
+  ports:
+  - name: mysql
+    port: 3306
+    protocol: TCP
+  selector:
+    app: drupal-mysql
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: drupal-mysql
+  labels:
+    app: drupal-mysql
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: drupal-mysql
+        tier: mysql
+    spec:
+      containers:
+        - image: mysql:5.7
+          name: drupal-mysql
+          args:
+            - --character-set-server=utf8mb4
+            - --collation-server=utf8mb4_general_ci
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              value: <PASSWORDHERE>
+            - name: MYSQL_DATABASE
+              value: drupal
+          ports:
+            - containerPort: 3306
+              name: drupal-mysql
+              protocol: TCP
+          volumeMounts:
+            - name: drupal-mysql
+              mountPath: /var/lib/mysql
+              subPath: data
+      volumes:
+        - name: drupal-mysql
+          persistentVolumeClaim:
+            claimName: drupal-mysql-pvc
