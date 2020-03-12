@@ -1,0 +1,17 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: app
+  labels:
+    app: app
+spec:
+  hosts:
+    - shadowapp.shmtu.edu.cn
+  gateways:
+    - shadowapp
+  http:
+    - route:
+        - destination:
+            host: app
+      mirror:
+        host: app-v2

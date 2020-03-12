@@ -1,0 +1,47 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: nfs-storage
+provisioner: shmtu.edu.cn/k8s-nfs
+parameters:
+  archiveOnDelete: "false"
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nfs-provisioner
+  namespace: shmtu
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nfs-provisioner
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: nfs-provisioner
+    spec:
+      serviceAccount: nfs-client-provisioner
+      containers:
+      - name: nfs-provisioner
+        image: quay.io/external_storage/nfs-client-provisioner:latest
+        volumeMounts:
+          - name: nfs-client-root
+            mountPath: /persistentvolumes
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        env:
+          - name: PROVISIONER_NAME
+            value: shmtu.edu.cn/k8s-nfs
+          - name: NFS_SERVER
+            value: 10.81.248.158
+          - name: NFS_PATH
+            value: /ifs/data/k8s
+      volumes:
+        - name: nfs-client-root
+          nfs:
+            server: 10.81.248.158
+            path: /ifs/data/k8s

@@ -1,0 +1,40 @@
+# 备注： 文件需要更名为 .gitlab-ci.yml
+image: docker:latest
+services:
+  - docker:dind
+
+stages:
+  - build
+  - deploy
+
+variables:
+  DOCKER_HOST: tcp://localhost:2375/
+  DOCKER_DRIVER: overlay2
+  DOCKER_TLS_CERTDIR: ""
+  CONTAINER_IMAGE: testapp:${CI_COMMIT_SHORT_SHA}
+  REGISTRY_IMAGE: ${REGISTRY_SERVER}/library/testapp:${CI_COMMIT_SHORT_SHA}
+
+build:
+  stage: build
+  script: 
+    - docker login -u ${REGISTRY_USER} -p ${REGISTRY_PASSWORD} ${REGISTRY_SERVER}
+    - docker build -t ${CONTAINER_IMAGE} .
+    - docker tag ${CONTAINER_IMAGE} ${REGISTRY_IMAGE}
+    - docker push ${REGISTRY_IMAGE}
+    - docker tag ${CONTAINER_IMAGE} testapp:latest
+
+deploy:
+  stage: deploy
+  variables:
+    GIT_STRATEGY: none
+  image: dtzar/helm-kubectl:1.14.1
+  script:
+    - kubectl version
+    - kubectl config set-cluster k8s --server="${K8S_SERVER}"
+    - kubectl config set clusters.k8s.certificate-authority-data "${K8S_CA_PEM}"
+    - kubectl config set-credentials gitlab --token="${K8S_USER_TOKEN}"
+    - kubectl config set-context default --cluster=k8s --user=gitlab
+    - kubectl config use-context default
+    - sed -i "s/<VERSION>/${CI_COMMIT_SHORT_SHA}/g" deployment.yaml
+    - cat deployment.yaml
+    - kubectl apply -f deployment.yaml
