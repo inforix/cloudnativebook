@@ -79,7 +79,7 @@ cat > /etc/docker/daemon.json <<EOF
     "overlay2.override_kernel_check=true"
   ],
   "registry-mirrors": [
-    "https://repo.shmtu.edu.cn
+    "https://repo.shmtu.edu.cn"
   ]
 }
 EOF
