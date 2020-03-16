@@ -1,3 +1,8 @@
+# Prepare on CentOS 8
+
+Completed script:
+
+```
 # Set Hostname
 hostnamectl set-hostname k8sdev.shmtu.edu.cn
 
@@ -16,6 +21,13 @@ firewall-cmd --reload
 
 modprobe br_netfilter
 echo '1' > /proc/sys/net/bridge/bridge-nf-call-iptables
+
+# 配置网络
+cat > /etc/sysctl.d/99-kubernetes-cri.conf <<EOF
+net.bridge.bridge-nf-call-ip6tables = 1
+net.bridge.bridge-nf-call-iptables = 1
+net.ipv4.ip_forward = 1
+EOF
 
 # 配置阿里云仓库
 cat <<EOF > /etc/yum.repos.d/kubernetes.repo
@@ -66,3 +78,8 @@ yum install -y bash-completion
 source /usr/share/bash-completion/bash_completion
 source <(kubectl completion bash)
 echo "source <(kubectl completion bash)" >> ~/.bashrc
+echo "alias k=kubectl" >> ~/.bashrc
+echo "complete -F __start_kubectl k" >> ~/.bashrc
+```
+
+We suggest reboot centos after this script.
