@@ -54,6 +54,9 @@ echo "* hard memlock  unlimited"  >> /etc/security/limits.conf
 yum -y install epel-release
 yum -y install yum-utils device-mapper-persistent-data lvm2 net-tools wget vim bind-util
 
+# 安装IPVS
+yum -y install ipvsadm
+
 # 添加Docker仓库
 yum-config-manager \
   --add-repo \
@@ -61,7 +64,6 @@ yum-config-manager \
 
 # 安装Docker
 yum -y install docker-ce
-
 
 # 首先创建/etc/docker目录
 mkdir /etc/docker
@@ -83,7 +85,6 @@ cat > /etc/docker/daemon.json <<EOF
   ]
 }
 EOF
-
 
 # 创建docker服务的配置目录
 mkdir -p /etc/systemd/system/docker.service.d
@@ -109,8 +110,3 @@ source <(kubectl completion bash)
 echo "source <(kubectl completion bash)" >> ~/.bashrc
 echo "alias k=kubectl" >> ~/.bashrc
 echo "complete -F __start_kubectl k" >> ~/.bashrc
-
-
-
-
-
