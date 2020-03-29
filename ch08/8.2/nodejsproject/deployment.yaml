@@ -9,8 +9,8 @@ metadata:
 spec:
   type: NodePort
   ports:
-  - port: 3000
-    nodePort: 30300
+    - port: 3000
+      nodePort: 30300
   selector:
     app: testapp
     tier: frontend
@@ -57,4 +57,4 @@ spec:
             initialDelaySeconds: 2
             periodSeconds: 2
       imagePullSecrets:
-        - name: local-registry    
+        - name: local-registry

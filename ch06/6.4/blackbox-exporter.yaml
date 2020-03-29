@@ -17,28 +17,28 @@ spec:
     spec:
       restartPolicy: Always
       containers:
-      - name: prometheus-blackbox-exporter
-        image: prom/blackbox-exporter:latest
-        imagePullPolicy: IfNotPresent
-        ports:
-        - name: transport
-          containerPort: 9115
-        readinessProbe:
-          tcpSocket:
-            port: 9115
-          initialDelaySeconds: 5
-          timeoutSeconds: 5
-        resources:
-          requests:
-            memory: 50Mi
-            cpu: 100m
-          limits:
-            memory: 60Mi
-            cpu: 200m
-        volumeMounts:
-        - name: config
-          mountPath: /etc/blackbox_exporter
+        - name: prometheus-blackbox-exporter
+          image: prom/blackbox-exporter:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: transport
+              containerPort: 9115
+          readinessProbe:
+            tcpSocket:
+              port: 9115
+            initialDelaySeconds: 5
+            timeoutSeconds: 5
+          resources:
+            requests:
+              memory: 50Mi
+              cpu: 100m
+            limits:
+              memory: 60Mi
+              cpu: 200m
+          volumeMounts:
+            - name: config
+              mountPath: /etc/blackbox_exporter
       volumes:
-      - name: config
-        configMap:
-          name: blackbox-exporter-conf
+        - name: config
+          configMap:
+            name: blackbox-exporter-conf

@@ -21,26 +21,26 @@ spec:
         prometheus.io/port: "9101"
     spec:
       containers:
-      - image: containersol/k8s-deployment-strategies
-        name: app
-        ports:
-        - name: http
-          containerPort: 8080
-        - name: probe
-          containerPort: 8086
-        - name: prometheus
-          containerPort: 9101
-        env:
-        - name: VERSION
-          value: v2.0
-        livenessProbe:
-          httpGet:
-            path: /live
-            port: probe
-          initialDelaySeconds: 5
-          periodSeconds: 5
-        readinessProbe:
-          httpGet:
-            path: /ready
-            port: probe
-          periodSeconds: 5
+        - image: containersol/k8s-deployment-strategies
+          name: app
+          ports:
+            - name: http
+              containerPort: 8080
+            - name: probe
+              containerPort: 8086
+            - name: prometheus
+              containerPort: 9101
+          env:
+            - name: VERSION
+              value: v2.0
+          livenessProbe:
+            httpGet:
+              path: /live
+              port: probe
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: probe
+            periodSeconds: 5

@@ -18,20 +18,19 @@ spec:
         app: nginx
     spec:
       containers:
-      - name: nginx
-        image: nginx:latest
-        ports:
-        - containerPort: 80
+        - name: nginx
+          image: nginx:latest
+          ports:
+            - containerPort: 80
       volumeMounts:
         - name: www
           mountPath: /usr/share/nginx/html
   volumeClaimTemplates:
-  - metadata:
-      name: www
-    spec:
-      accessModes: [ "ReadWriteOnce" ]
-      storageClassName: "nfs-storage"
-      resources:
-        requests:
-          storage: 1Gi
-    
+    - metadata:
+        name: www
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: "nfs-storage"
+        resources:
+          requests:
+            storage: 1Gi

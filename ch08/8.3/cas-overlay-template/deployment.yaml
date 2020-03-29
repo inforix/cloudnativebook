@@ -21,10 +21,10 @@ spec:
               podAffinityTerm:
                 labelSelector:
                   matchExpressions:
-                  - key: service
-                    operator: In
-                    values:
-                      - cas
+                    - key: service
+                      operator: In
+                      values:
+                        - cas
                 topologyKey: kubernetes.io/hostname
       containers:
         - name: cas

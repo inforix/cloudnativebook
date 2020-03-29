@@ -8,10 +8,10 @@ spec:
   type: NodePort
   externalTrafficPolicy: Local
   ports:
-  - name: http
-    port: 80
-    targetPort: 80
-    nodePort: 30180
+    - name: http
+      port: 80
+      targetPort: 80
+      nodePort: 30180
   selector:
     app: haproxy
 ---
@@ -30,17 +30,17 @@ spec:
         app: haproxy
     spec:
       containers:
-      - name: haproxy
-        image: haproxy
-        ports:
-        - containerPort: 80
-        volumeMounts:
-        - name: haproxy-conf
-          mountPath: /usr/local/etc/haproxy
+        - name: haproxy
+          image: haproxy
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: haproxy-conf
+              mountPath: /usr/local/etc/haproxy
       volumes:
-      - name: haproxy-conf
-        configMap:
-          name: haproxy
-          items:
-          - key: haproxy.conf
-            path: haproxy.cfg
+        - name: haproxy-conf
+          configMap:
+            name: haproxy
+            items:
+              - key: haproxy.conf
+                path: haproxy.cfg

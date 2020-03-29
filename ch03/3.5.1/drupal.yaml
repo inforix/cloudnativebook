@@ -1,4 +1,4 @@
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: drupal
@@ -7,6 +7,10 @@ metadata:
 spec:
   strategy:
     type: Recreate
+  selector:
+    matchLabels:
+      app: drupal
+      tier: frontend
   template:
     metadata:
       labels:
@@ -14,24 +18,25 @@ spec:
         tier: frontend
     spec:
       initContainers:
-      - name: init-site-volume
-        image: drupal:7.66
-        command: ['/bin/bash', '-c']
-        args: ['cp -r /var/www/html /data/; chown www-data:www-data /data/ -R']
-        volumeMounts:
-        - mountPath: /data
-          name: drupal
+        - name: init-site-volume
+          image: drupal:7.66
+          command: ["/bin/bash", "-c"]
+          args:
+            ["cp -r /var/www/html /data/; chown www-data:www-data /data/ -R"]
+          volumeMounts:
+            - mountPath: /data
+              name: drupal
       containers:
-      - image: drupal:7.66
-        name: drupal
-        ports:
-        - containerPort: 80
+        - image: drupal:7.66
           name: drupal
-        volumeMounts:
-        - name: drupal
-          mountPath: /var/www/html
-          subPath: html
+          ports:
+            - containerPort: 80
+              name: drupal
+          volumeMounts:
+            - name: drupal
+              mountPath: /var/www/html
+              subPath: html
       volumes:
-      - name: drupal
-        persistentVolumeClaim:
-          claimName: drupal-pvc
+        - name: drupal
+          persistentVolumeClaim:
+            claimName: drupal-pvc

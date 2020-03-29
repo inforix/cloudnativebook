@@ -13,11 +13,10 @@ variables:
   DOCKER_HOST: tcp://localhost:2375/
   DOCKER_DRIVER: overlay2
   REGISTRY_IMAGE: ${REGISTRY_SERVER}/cas:${IMAGE_VERSION}
-  
 
 build:
   stage: build
-  script: 
+  script:
     - docker build -t ${CONTAINER_IMAGE} .
     - docker login -u ${REGISTRY_USER} -p ${REGISTRY_PASSWORD} ${REGISTRY_SERVER}
     - docker tag ${CONTAINER_IMAGE} ${REGISTRY_IMAGE}

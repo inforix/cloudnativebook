@@ -7,13 +7,13 @@ metadata:
 spec:
   type: NodePort
   ports:
-  - port: 80
-    nodePort: 30080
+    - port: 80
+      nodePort: 30080
   selector:
     app: drupal
     tier: frontend
 ---
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: drupal
@@ -29,34 +29,37 @@ spec:
         tier: frontend
     spec:
       initContainers:
-      - name: init-site-volume
-        image: drupal:latest
-        command: ['/bin/bash', '-c']
-        args: ['cp -r /var/www/html/sites/* /data/; chown www-data:www-data /data/ -R']
-        volumeMounts:
-        - mountPath: /data
-          name: drupal
-          subPath: sites
+        - name: init-site-volume
+          image: drupal:latest
+          command: ["/bin/bash", "-c"]
+          args:
+            [
+              "cp -r /var/www/html/sites/* /data/; chown www-data:www-data /data/ -R",
+            ]
+          volumeMounts:
+            - mountPath: /data
+              name: drupal
+              subPath: sites
       containers:
-      - image: drupal:latest
-        name: drupal
-        ports:
-        - containerPort: 80
+        - image: drupal:latest
           name: drupal
-        volumeMounts:
-        - name: drupal
-          mountPath: /var/www/html/sites
-          subPath: sites
-        - name: drupal
-          mountPath: /var/www/html/modules
-          subPath: modules
-        - name: drupal
-          mountPath: /var/www/html/themes
-          subPath: themes
-        - name: drupal
-          mountPath: /var/www/html/profiles
-          subPath: profiles
+          ports:
+            - containerPort: 80
+              name: drupal
+          volumeMounts:
+            - name: drupal
+              mountPath: /var/www/html/sites
+              subPath: sites
+            - name: drupal
+              mountPath: /var/www/html/modules
+              subPath: modules
+            - name: drupal
+              mountPath: /var/www/html/themes
+              subPath: themes
+            - name: drupal
+              mountPath: /var/www/html/profiles
+              subPath: profiles
       volumes:
-      - name: drupal
-        persistentVolumeClaim:
-          claimName: drupal-pvc
+        - name: drupal
+          persistentVolumeClaim:
+            claimName: drupal-pvc

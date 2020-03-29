@@ -12,7 +12,7 @@ variables:
   REGISTRY_IMAGE: ${REGISTRY_SERVER}/library/testapp:${CI_COMMIT_SHORT_SHA}
 build:
   stage: build
-  script: 
+  script:
     - docker login -u ${REGISTRY_USER} -p ${REGISTRY_PASSWORD} ${REGISTRY_SERVER}
     - docker build -t ${CONTAINER_IMAGE} .
     - docker tag ${CONTAINER_IMAGE} ${REGISTRY_IMAGE}
@@ -33,5 +33,3 @@ deploy:
     - sed -i "s/<VERSION>/${CI_COMMIT_SHORT_SHA}/g" deployment.yaml
     - cat deployment.yaml
     - kubectl apply -f deployment.yaml
-    
-    

@@ -16,7 +16,7 @@ variables:
 
 build:
   stage: build
-  script: 
+  script:
     - docker login -u ${REGISTRY_USER} -p ${REGISTRY_PASSWORD} ${REGISTRY_SERVER}
     - docker build -t ${CONTAINER_IMAGE} .
     - docker tag ${CONTAINER_IMAGE} ${REGISTRY_IMAGE}
