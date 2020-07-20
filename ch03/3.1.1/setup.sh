@@ -30,6 +30,7 @@ cat > /etc/systemd/system/docker.service.d/proxy.conf <<EOF
 Environment="HTTP_PROXY=http://10.81.38.5:8443/" "HTTPS_PROXY=http://10.81.38.5:8443/" "NO_PROXY=localhost,127,0.0.1,.shmtu.edu.cn,10."
 EOF
 
+systemctl daemon-reload
 systemctl restart docker
 
 
