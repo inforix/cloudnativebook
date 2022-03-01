@@ -20,6 +20,12 @@ echo '*/30 * * * * /usr/sbin/ntpdate time7.aliyun.com >/dev/null 2>&1' > /tmp/cr
 crontab /tmp/crontab2.tmp
 systemctl start ntpdate.service
 
+# 配置时间同步也可以这样：
+# yum install chrony -y
+# systemctl enable chronyd --now
+# chronyc sources
+
+
 # 配置网络
 cat > /etc/sysctl.d/99-kubernetes-cri.conf <<EOF
 net.bridge.bridge-nf-call-ip6tables = 1
