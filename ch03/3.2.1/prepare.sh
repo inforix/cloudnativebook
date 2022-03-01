@@ -63,7 +63,7 @@ yum-config-manager \
   https://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo 
 
 # 安装Docker
-yum -y install docker-ce
+yum -y install docker-ce docker-ce-cli containerd
 
 # 首先创建/etc/docker目录
 mkdir /etc/docker
@@ -81,18 +81,18 @@ cat > /etc/docker/daemon.json <<EOF
     "overlay2.override_kernel_check=true"
   ],
   "registry-mirrors": [
-    "https://repo.shmtu.edu.cn"
+    "https://registry.cn-hangzhou.aliyuncs.com"
   ]
 }
 EOF
 
 # 创建docker服务的配置目录
-mkdir -p /etc/systemd/system/docker.service.d
+#mkdir -p /etc/systemd/system/docker.service.d
 # 添加代理服务器和无代理信息
-cat > /etc/systemd/system/docker.service.d/proxy.conf <<EOF
-[Service]
-Environment="HTTP_PROXY=http://10.81.38.5:8443/" "HTTPS_PROXY=http://10.81.38.5:8443/" "NO_PROXY=localhost,127,0.0.1,.shmtu.edu.cn,10."
-EOF
+#cat > /etc/systemd/system/docker.service.d/proxy.conf <<EOF
+#[Service]
+#Environment="HTTP_PROXY=http://10.81.38.5:8443/" "HTTPS_PROXY=http://10.81.38.5:8443/" "NO_PROXY=localhost,127,0.0.1,.shmtu.edu.cn,10."
+#EOF
 
 # 重启Docker
 systemctl daemon-reload
